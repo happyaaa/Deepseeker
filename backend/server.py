@@ -29,7 +29,7 @@ supabase: Client = create_client(
     os.getenv("SUPABASE_KEY")
 )
 
-# 确保你去后台新建了这些 ID
+# Ensure these prompt IDs exist in Keywords AI
 PLANNER_PROMPT_ID = os.getenv("PLANNER_PROMPT_ID")
 CRITIC_PROMPT_ID = os.getenv("CRITIC_PROMPT_ID")
 REPORTER_PROMPT_ID = os.getenv("REPORTER_PROMPT_ID")
@@ -38,7 +38,7 @@ class ResearchRequest(BaseModel):
     query: str
 
 def call_keywords_agent(prompt_id, variables, trace_name, fallback_content=None):
-    """通用的 Agent 调用函数"""
+    """Generic Keywords AI prompt invocation."""
     if not prompt_id:
         print(f"❌ Error: Prompt ID for {trace_name} is missing/None!")
         return fallback_content
@@ -64,12 +64,12 @@ def perform_search(query):
     print(f"🔎 Tavily Searching: {query}...")
     try:
         tavily = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
-        # 使用 advanced 模式
+        # Use basic depth for faster, cheaper retrieval
         response = tavily.search(query=query, search_depth="basic", max_results=2)
         
         results = response.get("results", [])
         if not results:
-            return None, []  # 返回 None 表示搜索失败
+            return None, []  # No results
             
         context = []
         sources = []
@@ -93,7 +93,6 @@ def perform_search(query):
 async def start_research(request: ResearchRequest):
     query = request.query
     logs = []
-    demo_forced_once = False
     
     # --- Phase 1: Planning ---
     logs.append({"step": "planning", "status": "running", "message": "🧠 Decomposing research task..."})
@@ -111,29 +110,13 @@ async def start_research(request: ResearchRequest):
     collected_context = ""
     collected_sources = []
     
-    # --- Phase 2: Execution with Self-Correction (核心升级点) ---
+    # --- Phase 2: Execution with Self-Correction ---
     for i, step in enumerate(steps):
         logs.append({"step": "searching", "status": "running", "message": f"🕵️ Step {i+1}: {step}"})
+
+        result, sources = perform_search(step)
         
-        # === 🎬 DEMO 专用：故意制造一次失败 ===
-        # 假设你的 Demo 搜的问题里包含 "React"，我们就故意让第一次搜 "React" 失败
-        if (not demo_forced_once) and "React" in step and "forced_fail" not in step:
-            # 这是一个只有上帝（你）知道的标记，防止无限失败
-            print("😈 Demo Hack: Forcing a failure to trigger Critic!")
-            logs.append({
-                "step": "demo",
-                "status": "retry",
-                "message": "😈 Demo Hack: Forced a failure to trigger Critic."
-            })
-            result = None
-            sources = []
-            step = step + " forced_fail"  # 标记一下，下次不失败了
-            demo_forced_once = True
-        else:
-            # 正常搜索
-            result, sources = perform_search(step)
-        
-        # === Critic Loop (这里体现 Technical Execution) ===
+        # === Critic Loop ===
         if not result or len(result) < 50:
             logs.append({
                 "step": "warning",
@@ -141,7 +124,7 @@ async def start_research(request: ResearchRequest):
                 "message": f"⚠️ Search failed for '{step}'. Attempting self-correction..."
             })
             
-            # 让 LLM 尝试重写搜索词（使用 Prompt Management）
+            # Ask the Critic to rewrite the query (Prompt Management)
             refined_query = call_keywords_agent(
                 prompt_id=CRITIC_PROMPT_ID,
                 variables={"failed_query": step},
@@ -154,7 +137,7 @@ async def start_research(request: ResearchRequest):
                 "status": "retry",
                 "message": f"🔄 Retrying with: {refined_query}"
             })
-            # 重试
+            # Retry search
             result, sources = perform_search(refined_query)
             
             if result:
@@ -179,7 +162,7 @@ async def start_research(request: ResearchRequest):
         fallback_content="Failed to generate report.",
     )
 
-    # === 新增：保存到数据库 ===
+    # === Save to Supabase ===
     try:
         supabase.table("reports").insert(
             {

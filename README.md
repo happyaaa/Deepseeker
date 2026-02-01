@@ -92,6 +92,9 @@ python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
+# Copy the example env and fill in your keys
+cp .env.example .env
+
 # Create .env file with your API keys
 # KEYWORDS_AI_API_KEY=...
 # PLANNER_PROMPT_ID=...
