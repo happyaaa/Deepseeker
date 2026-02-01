@@ -4,6 +4,7 @@
 > Built for the Keywords AI UIUC Hackathon 2026.
 
 ![DeepSeeker UI Demo](assets/demo-screenshot.png)
+![DeepSeeker UI Demo 2](assets/demo-screenshot-2.png)
 
 [![Keywords AI](https://img.shields.io/badge/Powered%20by-Keywords%20AI-purple)](https://keywords.ai/)
 [![Lovable](https://img.shields.io/badge/UI%20by-Lovable-blue)](https://lovable.dev/)
@@ -11,7 +12,7 @@
 [![Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
 ## 🎥 Demo Video
 
-**[🔗 Watch the 2-Minute Demo Here]** *(Replace with your YouTube/Loom Link)*
+**[🔗 Watch the 2-Minute Demo Here](https://www.youtube.com/watch?v=RQSeRDuB9W4)**
 > *Note: The project is designed to run locally to ensure data privacy and optimal latency.*
 
 ---
