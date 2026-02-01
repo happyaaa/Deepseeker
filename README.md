@@ -3,13 +3,14 @@
 > **Turn AI Hallucinations into Verified Intelligence.**
 > Built for the Keywords AI UIUC Hackathon 2026.
 
-![DeepSeeker UI Demo](assets/demo-screenshot.png)
-![DeepSeeker UI Demo 2](assets/demo-screenshot-2.png)
-
 [![Keywords AI](https://img.shields.io/badge/Powered%20by-Keywords%20AI-purple)](https://keywords.ai/)
 [![Lovable](https://img.shields.io/badge/UI%20by-Lovable-blue)](https://lovable.dev/)
 [![Tavily](https://img.shields.io/badge/Search%20by-Tavily-orange)](https://tavily.com/)
 [![Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
+[![Trae](https://img.shields.io/badge/AI%20IDE-Trae-black)](https://www.trae.ai/)
+
+![DeepSeeker UI Demo](assets/demo-screenshot.png)
+![DeepSeeker UI Demo 2](assets/demo-screenshot-2.png)
 ## 🎥 Demo Video
 
 **[🔗 Watch the 2-Minute Demo Here](https://www.youtube.com/watch?v=RQSeRDuB9W4)**
@@ -54,6 +55,9 @@ We used Keywords AI as the **Full-Stack Observability & Control Plane**:
 ### 3. Supabase (Database)
 * Used as the persistent storage layer.
 * We utilize **Supabase SQL** to store JSONB logs, allowing us to replay and analyze past research sessions.
+
+### 4. Trae (AI IDE)
+We utilized **Trae** as our intelligent development environment. Its AI coding assistance accelerated the build of our FastAPI backend and complex agentic logic, letting us focus on the recursive architecture instead of boilerplate code.
 
 ---
 
